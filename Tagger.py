@@ -45,12 +45,12 @@ def update_desktop_ini(directory,inserted_tags):
             # append or overwrite?
             if(args.append):
                 existing_tags=re.search(r"Prop5=31,(.*)$",data, re.MULTILINE)
-                existing_tags=existing_tags.group(1)
+                existing_tags=existing_tags.group(1)+";"
             else:
                 existing_tags=""
+                
             inserted_string = tag_pre + existing_tags + inserted_tags + '\n'
-
-            updated_data = re.sub(r"/Prop5=31,.*$/m" , inserted_string ,data,  re.MULTILINE)
+            updated_data = re.sub(r"Prop5=31,.*$" , inserted_string ,data,  re.MULTILINE)
 
         # if no tags append to data
         else:
@@ -63,7 +63,7 @@ def update_desktop_ini(directory,inserted_tags):
 
     # write desktop.ini
     desktop = open(desktop_ini_path,"w")
-    desktop.write(data)
+    desktop.write(updated_data)
     desktop.close()
 
     # set file to hidden
