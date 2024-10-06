@@ -39,23 +39,19 @@ def update_desktop_ini(directory,inserted_tags):
         data = desktop.read()
         desktop.close()
         os.remove(desktop_ini_path)
-
+              
         # check if it already contains tags
         if (tag_header in data):
             # append or overwrite?
             if(args.append):
-                print(directory)
-                print(regex)
-                print("data")
-                print(data)
-                existing_tags=re.search(r"Prop5=31,(.*)$",data)
-                print("existing tags")
-                print(existing_tags)
+                existing_tags=re.search(r"Prop5=31,(.*)$",data, re.MULTILINE)
                 existing_tags=existing_tags.group(1)
             else:
                 existing_tags=""
-            data = re.sub(r"Prop5=31,.*$",tag_pre+existing_tags+inserted_tags+'\n',data)
-            
+            inserted_string = tag_pre + existing_tags + inserted_tags + '\n'
+
+            updated_data = re.sub(r"/Prop5=31,.*$/m" , inserted_string ,data,  re.MULTILINE)
+
         # if no tags append to data
         else:
             data+=("\n "+ tag_header +
