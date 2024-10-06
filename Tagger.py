@@ -7,18 +7,22 @@ import ctypes
 ##-- global variables --##
 tag_header =r"[{F29F85E0-4FF9-1068-AB91-08002B27B3D9}]"
 tag_prefix =r"Prop5=31,"
-regex = tag_prefix+'.*\n'
+regex = tag_prefix+r'(.*)$'
 
 def assign_tags(directory):
-    #check if tags.txt is in directory
+    # check if tags.txt is in directory
     if(args.tags in os.listdir(directory)):
-        #read tags.txt
+
+        # read tags.txt
         tags = open(directory+"\\"+args.tags,'r')
         tags_read = tags.read()
         tags.close()
+
+        # prep string
         tags_read=tags_read.strip()
         tags_read=tags_read.replace(args.seperator,";")
-        print(tags_read)
+
+        # update ini file
         update_desktop_ini(directory,tags_read)
     else:
         print(directory+" has no tags file!")
@@ -36,22 +40,24 @@ def update_desktop_ini(directory,inserted_tags):
         desktop.close()
         os.remove(desktop_ini_path)
 
-        #check if it already contains tags
+        # check if it already contains tags
         if (tag_header in data):
-            #append or overwrite?
+            # append or overwrite?
             if(args.append):
-                existing_tags=re.search(regex,s).group(1)+';'
+                existing_tags=re.search(regex,data).group(1)
             else:
                 existing_tags=""
             data = re.sub(regex,tag_prefix+existing_tags+inserted_tags+'\n',data)
-        #if no tags append to data
+            
+        # if no tags append to data
         else:
             data+=("\n "+ tag_header +
                    "\n "+ tag_prefix + inserted_tags)
-    #if it does not exist, generate it
+    # if it does not exist, generate it
     else:
         data = (tag_header +
                    "\n "+ tag_prefix + inserted_tags)
+
     # write desktop.ini
     desktop = open(desktop_ini_path,"w")
     desktop.write(data)
@@ -59,6 +65,7 @@ def update_desktop_ini(directory,inserted_tags):
 
     # set file to hidden
     check = ctypes.windll.kernel32.SetFileAttributesW(desktop_ini_path,0x02)
+
     if(not check):
         print(desktop_ini_path + " not set hidden")
 
@@ -98,4 +105,4 @@ args=parser.parse_args()
 for root, dirs, files in os.walk(args.input):
     for folder in dirs:
         assign_tags(os.path.join(root,folder))
-return
+
