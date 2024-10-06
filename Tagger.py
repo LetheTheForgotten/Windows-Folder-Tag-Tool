@@ -6,8 +6,8 @@ import ctypes
 
 ##-- global variables --##
 tag_header =r"[{F29F85E0-4FF9-1068-AB91-08002B27B3D9}]"
-tag_prefix =r"Prop5=31,"
-regex = tag_prefix+r'(.*)$'
+tag_pre =r"Prop5=31,"
+regex = r"Prop5=31,(.*)$"
 
 def assign_tags(directory):
     # check if tags.txt is in directory
@@ -44,19 +44,26 @@ def update_desktop_ini(directory,inserted_tags):
         if (tag_header in data):
             # append or overwrite?
             if(args.append):
-                existing_tags=re.search(regex,data).group(1)
+                print(directory)
+                print(regex)
+                print("data")
+                print(data)
+                existing_tags=re.search(r"Prop5=31,(.*)$",data)
+                print("existing tags")
+                print(existing_tags)
+                existing_tags=existing_tags.group(1)
             else:
                 existing_tags=""
-            data = re.sub(regex,tag_prefix+existing_tags+inserted_tags+'\n',data)
+            data = re.sub(r"Prop5=31,.*$",tag_pre+existing_tags+inserted_tags+'\n',data)
             
         # if no tags append to data
         else:
             data+=("\n "+ tag_header +
-                   "\n "+ tag_prefix + inserted_tags)
+                   "\n "+ tag_pre + inserted_tags)
     # if it does not exist, generate it
     else:
         data = (tag_header +
-                   "\n "+ tag_prefix + inserted_tags)
+                   "\n "+ tag_pre + inserted_tags)
 
     # write desktop.ini
     desktop = open(desktop_ini_path,"w")
