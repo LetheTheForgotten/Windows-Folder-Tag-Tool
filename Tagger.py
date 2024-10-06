@@ -98,3 +98,4 @@ args=parser.parse_args()
 for root, dirs, files in os.walk(args.input):
     for folder in dirs:
         assign_tags(os.path.join(root,folder))
+return
